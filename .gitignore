@@ -1,0 +1,8 @@
+*~
+*.beam
+.erlang.mk/*
+deps/*
+ebin/*
+collatz_conjecture.d
+.piglatin.plt
+cover/
