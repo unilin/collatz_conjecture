@@ -25,9 +25,8 @@ worker_test() ->
 
     WorkerPid ! {self(), 2}, % send message to WorkerPid(message include: pid of current process, number assign to worker
     receive  % waiting message
-        {From1, Number1,Result1} -> % accept message which is tuple, assign value of first element of tupple to variable From1, assign second element of tupple to variable Result1
+        {From1, Result1} -> % accept message which is tuple, assign value of first element of tupple to variable From1, assign second element of tupple to variable Result1
             ?assertEqual(1, Result1),%check result
-            ?assertEqual(2, Number1), % check given number
             ?assertEqual(WorkerPid, From1); % check "From1" is "WorkerPid" or not
         _Another1 ->  % accept another message
             ?assert(false) % fail
@@ -35,9 +34,8 @@ worker_test() ->
 
     WorkerPid ! {self(),10},
     receive
-        {From2, Number2, Result2} ->
+        {From2, Result2} ->
             ?assertEqual(6, Result2),
-            ?assertEqual(10, Number2),
             ?assertEqual(WorkerPid, From2);
         _Another2 ->
             ?assert(false)
@@ -45,9 +43,8 @@ worker_test() ->
 
     WorkerPid ! {self(), 30},
     receive
-        {From3, Number3, Result3} ->
+        {From3, Result3} ->
             ?assertEqual(18, Result3),
-            ?assertEqual(30, Number3),
             ?assertEqual(WorkerPid, From3);
         _Another3 ->
             ?assert(false)

@@ -4,5 +4,5 @@
 deps/*
 ebin/*
 collatz_conjecture.d
-.piglatin.plt
+.collatz_conjecture.plt
 cover/
