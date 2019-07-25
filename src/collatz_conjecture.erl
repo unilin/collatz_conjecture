@@ -2,7 +2,7 @@
 -ifdef(TEST).
     -compile(export_all).
 -endif.
--export([steps/1,worker/0]).
+-export([steps/1, worker/0, calculate/2]).
 -record(worker_state, {tasks = [], results = []}).
 
 -spec steps(Num)    -> Result when
@@ -20,6 +20,12 @@ steps(N) -> steps_helper(N, 0).
 steps_helper(1, Steps) -> Steps;
 steps_helper(N, Steps) when (N rem 2 =:= 0) -> steps_helper(N div 2, Steps + 1);
 steps_helper(N, Steps) -> steps_helper(3 * N + 1, Steps + 1).
+
+calculate(From, To) -> calculate(From, To, [spawn(collatz_conjecture, worker, []) || _X <- lists:seq(1, 5)]).
+calculate(From, To, [H|T]) ->
+    H ! {self(), From},
+    calculate(From + 1, To, T);
+calculate(From, To, []) ->
 
 
 worker() -> worker(#worker_state{}). % init state -> {worker_state,  [], []}
