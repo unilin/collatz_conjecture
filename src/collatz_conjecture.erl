@@ -21,12 +21,20 @@ steps_helper(1, Steps) -> Steps;
 steps_helper(N, Steps) when (N rem 2 =:= 0) -> steps_helper(N div 2, Steps + 1);
 steps_helper(N, Steps) -> steps_helper(3 * N + 1, Steps + 1).
 
-calculate(From, To) -> calculate(From, To, [spawn(collatz_conjecture, worker, []) || _X <- lists:seq(1, 5)]).
-calculate(From, To, [H|T]) ->
-    H ! {self(), From},
-    calculate(From + 1, To, T);
-calculate(From, To, []) ->
+calculate(From, To) -> calculate(From, To, [spawn(collatz_conjecture, worker, []) || _X <- lists:seq(1, 5)], 0).
 
+calculate(From, To, _Workers, LongestStep) when (From > To) -> LongestStep;
+
+calculate(From, To, [H|T], LongestStep) ->
+    H ! {self(), From},
+    calculate(From + 1, To, T, LongestStep);
+
+
+calculate(From, To, [], LongestStep) ->
+    receive
+        {WorkerPid, Result} ->
+            calculate_message(From, To, [WorkerPid], max(Result, LongestStep))
+    end.
 
 worker() -> worker(#worker_state{}). % init state -> {worker_state,  [], []}
 worker(State) ->  % head of function
