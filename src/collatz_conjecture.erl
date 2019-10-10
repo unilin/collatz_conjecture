@@ -22,24 +22,29 @@ steps_helper(1, Steps) -> Steps; %when N=1, get result "Steps".
 steps_helper(N, Steps) when (N rem 2 =:= 0) -> steps_helper(N div 2, Steps + 1);% when N rem 2 =:=0.
 steps_helper(N, Steps) -> steps_helper(3 * N + 1, Steps + 1). %when N cannot be divisible by 2.
 
+-spec calculate(Num1, Num2) -> Result when
+                Num1        :: pos_integer(),
+                Num2        :: pos_integer(),
+                Result      :: non_neg_integer().
+
 calculate(From, To) -> calculate(From, To, [spawn(collatz_conjecture, worker, []) || _X <- lists:seq(1, 5)], 0).% spawn
 %5 workers and put 5 pid (pid get from "(From, To)") to the list,
 
-calculate(From, To, Workers, LongestStep) when (From =:= To) andalso length(Workers) =:= 5 -> LongestStep; %when From>To,return to the LongsStep.
-calculate(From, To, Workers, LongestStep) when From =:= To ->
+calculate(From, To, Workers, LongestStep) when (From > To) andalso length(Workers) =:= 5 -> LongestStep; %when From>To,return to the LongsStep.
+calculate(From, To, Workers, LongestStep) when From > To ->
     receive
         {WorkerPid, Result} ->
             calculate(From, To, [WorkerPid | Workers], max(Result, LongestStep))
     end;
 
 calculate(From, To, [H|T], LongestStep) -> % put 5 pid to the worker list,return the LongestStep
-    io:format("From ~p, To: ~p ~p~n",[From, To, ?LINE]),
+
     H ! {self(), From},
     calculate(From + 1, To, T, LongestStep);
 
 
 calculate(From, To, Workers, LongestStep) ->
-    io:format("From ~p, To: ~p ~p~n",[From, To, ?LINE]),
+
     receive
         {WorkerPid, Result} ->
             calculate(From, To, [WorkerPid | Workers], max(Result, LongestStep))

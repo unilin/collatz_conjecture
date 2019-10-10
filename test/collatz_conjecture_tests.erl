@@ -2,7 +2,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 
-steps_test() ->
+steps_test() -> %test steps.
     ?assertEqual(18, collatz_conjecture:steps(30)),
     ?assertEqual(6, collatz_conjecture:steps(10)),
     ?assertEqual({error,"Only positive numbers are available"}, collatz_conjecture:steps(-3)),
@@ -76,6 +76,11 @@ worker_test() ->
 
     WorkerPid ! make_me_sia, % send message to WorkerPid( message is atom
     timer:sleep(10),
-    ?assertNot(is_process_alive(WorkerPid)). % check process alive or not
+    ?assertNot(is_process_alive(WorkerPid)). % check process alive
 
+calculate_test() ->
+    ?assertEqual(7, collatz_conjecture:calculate(1, 3)),
+    ?assertEqual(16, collatz_conjecture:calculate(1, 7)),
+    ?assertEqual(20, collatz_conjecture:calculate(10, 20)),
+    ?assertEqual(20, collatz_conjecture:calculate(15, 18)).
 
